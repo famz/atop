@@ -35,7 +35,7 @@ OBJMOD0  = version.o
 OBJMOD1  = various.o  deviate.o   procdbase.o
 OBJMOD2  = acctproc.o photoproc.o photosyst.o cgroups.o rawlog.o ifprop.o parseable.o
 OBJMOD3  = showgeneric.o drawbar.o showlinux.o  showsys.o showprocs.o
-OBJMOD4  = atopsar.o  netatopif.o netatopbpfif.o gpucom.o  json.o utsnames.o
+OBJMOD4  = atopsar.o  netatopif.o netatopbpfif.o gpucom.o  json.o utsnames.o prom.o
 ALLMODS  = $(OBJMOD0) $(OBJMOD1) $(OBJMOD2) $(OBJMOD3) $(OBJMOD4)
 
 VERS     = $(shell ./atop -V 2>/dev/null| sed -e 's/^[^ ]* //' -e 's/ .*//')
@@ -43,7 +43,7 @@ VERS     = $(shell ./atop -V 2>/dev/null| sed -e 's/^[^ ]* //' -e 's/ .*//')
 all: 		atop atopsar atopacctd atopconvert atopcat atophide
 
 atop:		atop.o    $(ALLMODS) Makefile
-		$(CC) atop.o $(ALLMODS) -o atop -lncursesw -lz -lm -lrt $(LDFLAGS)
+		$(CC) atop.o $(ALLMODS) -o atop -lncursesw -lz -lm -lrt -lpthread $(LDFLAGS)
 
 atopsar:	atop
 		ln -sf atop atopsar

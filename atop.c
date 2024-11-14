@@ -150,6 +150,7 @@
 #include "json.h"
 #include "gpucom.h"
 #include "netatop.h"
+#include "prom.h"
 
 #define	allflags  "ab:cde:fghijklmnopqrstuvwxyz:123456789ABCDEFGHIJ:KL:MNOP:QRSTUVWXYZ"
 #define	MAXFL		84      /* maximum number of command-line flags  */
@@ -746,6 +747,7 @@ engine(void)
 	if (nrgpus)
 		supportflags |= GPUSTAT;
 
+    prom_serve_start("127.0.0.1", 5617);
 	/*
 	** MAIN-LOOP:
 	**    -	Wait for the requested number of seconds or for other trigger
@@ -960,6 +962,12 @@ engine(void)
 		if ( (supportflags&CGROUPV2) )
 			ncgroups = deviatcgroup(&devcstat, &npids);
 
+		prom_sample(curtime,
+				     curtime-pretime > 0 ? curtime-pretime : 1,
+		           	     &devtstat, devsstat,
+				     devcstat, ncgroups, npids,
+		                     nprocexit, noverflow, sampcnt==0);
+
 		/*
 		** activate the installed print function to visualize
 		** the deviations
@@ -969,7 +977,6 @@ engine(void)
 		           	     &devtstat, devsstat,
 				     devcstat, ncgroups, npids,
 		                     nprocexit, noverflow, sampcnt==0);
-
 		/*
 		** release dynamically allocated memory
 		*/
